@@ -13,11 +13,11 @@ headers = {
 
 response = requests.request("GET", url, headers=headers)
 
-crypto_names = response.text
-print(crypto_names)
+crypto_str = response.text
 
-# TODO: fix the type to list (str actually)
-print(type(crypto_names))
+crypto_names = eval(crypto_str)
+
+print(crypto_names)
 
 # For testing only, to be modified later
 
