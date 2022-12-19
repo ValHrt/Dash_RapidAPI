@@ -17,29 +17,17 @@ crypto_str = response.text
 
 crypto_names = eval(crypto_str)
 
-print(crypto_names)
-
-# For testing only, to be modified later
-
 app = Dash(__name__)
 
-colors = {
-    'background': '#111111',
-    'text': '#7FDBFF'
-}
 
-app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+app.layout = html.Div(children=[
     html.H1(
         children='Crypto Dashboard',
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }
     ),
 
     html.Div(children=[
         html.Br(),
-        html.Label('Multi-Select Dropdown'),
+        html.Label('Crypto-Currencies'),
         dcc.Dropdown(options = crypto_names,
                      value = ['btc', 'eth'],
                      multi=True),
