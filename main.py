@@ -59,6 +59,7 @@ date_lst.reverse()
 
 ######################### PANDAS | PLOTLY ######################### 
 df_market = pd.DataFrame({"Date": date_lst, "Price": coin_market})
+print(df_market.dtypes)
 
 price_fig = px.line(df_market, x = "Date", y = "Price", title = "Bitcoin price "
                     "evolution in €")
@@ -85,11 +86,13 @@ def annotate_plot(df, choice):
         "choice argument!")
 
     annot = {
-        'x': df.iloc[idx]["Date"].values[0],
-        'y': df.iloc[idx]["Price"].values[0],
+        'x': df.loc[idx]["Date"].values[0],
+        'y': df.loc[idx]["Price"].values[0],
         'showarrow': True, 'arrowhead': 3,
-        'text': f'{choice.title()} price: {round(df.iloc[idx]["Price"].values[0], 2)}',
+        'text': f'{choice.title()} price: {round(df.loc[idx]["Price"].array[0], 2)}',
         'font': {'size': 10, 'color': color}}
+
+    print(annot)
 
     return annot
 
@@ -179,24 +182,19 @@ def update_figure(currency, coin, relayout_data):
                                       coin_market_new})
         price_fig = px.line(df_market_new, x = "Date", y = "Price", title =
                             f"{coin} price evolution in {usd_eur_symbol(currency)}")
-        date_buttons_new = [
-            {'count': 12, 'step': "month", 'stepmode': "todate", 'label': "1YTD"},
-            {'count': 6, 'step': "month", 'stepmode': "todate", 'label': "6MTD"},
-            {'count': 3, 'step': "month", 'stepmode': "todate", 'label': "3MTD"},
-            {'count': 1, 'step': "month", 'stepmode': "todate", 'label': "1MTD"},
-            {'count': 14, 'step': "day", 'stepmode': "todate", 'label': "2WTD"}]
 
         if (relayout_data is None) or ("xaxis.range[0]" not in relayout_data):
             raise PreventUpdate  # from dash.exceptions import PreventUpdate
 
         mask = (df_market_new['Date'] > relayout_data["xaxis.range[0]"]) &\
         (df_market_new['Date'] <= relayout_data["xaxis.range[1]"])
-        print(df_market_new.loc[mask])
+
+        df_market_new["Date"] = df_market_new["Date"].dt.date
 
         price_fig.update_yaxes(autorange = False)
         price_fig.update_layout(
             {'xaxis': {'rangeselector': {
-                'buttons': date_buttons_new},
+                'buttons': date_buttons},
                        'range': [
                        df_market_new.loc[mask].iloc[0]["Date"],
                        df_market_new.loc[mask].iloc[-1]["Date"]]},
@@ -205,6 +203,7 @@ def update_figure(currency, coin, relayout_data):
              df_market_new.loc[mask]["Price"].max()*1.02]},
              'annotations': [annotate_plot(df_market_new.loc[mask], 'min'),
                              annotate_plot(df_market_new.loc[mask], 'max')]})
+        print(annotate_plot(df_market_new.loc[mask], 'max'))
     return price_fig
 
 
@@ -214,6 +213,10 @@ def usd_eur_symbol(currency: str):
     elif currency == "usd":
         return "$"
     return currency.upper()
+
+
+def convert_timestamp(time):
+    return dt.datetime.utcfromtimestamp(time.tolist()/1e9).date()
 
 if __name__ == '__main__':
     app.run_server(debug=True)
