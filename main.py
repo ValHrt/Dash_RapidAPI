@@ -59,7 +59,6 @@ date_lst.reverse()
 
 ######################### PANDAS | PLOTLY ######################### 
 df_market = pd.DataFrame({"Date": date_lst, "Price": coin_market})
-print(df_market.dtypes)
 
 price_fig = px.line(df_market, x = "Date", y = "Price", title = "Bitcoin price "
                     "evolution in €")
@@ -69,7 +68,8 @@ date_buttons = [
     {'count': 6, 'step': "month", 'stepmode': "todate", 'label': "6MTD"},
     {'count': 3, 'step': "month", 'stepmode': "todate", 'label': "3MTD"},
     {'count': 1, 'step': "month", 'stepmode': "todate", 'label': "1MTD"},
-    {'count': 14, 'step': "day", 'stepmode': "todate", 'label': "2WTD"}]
+    {'count': 14, 'step': "day", 'stepmode': "todate", 'label': "2WTD"},
+    {'step': 'all', 'label': 'Max'}]
 
 
 def annotate_plot(df, choice):
@@ -93,8 +93,6 @@ def annotate_plot(df, choice):
         'showarrow': False,
         'text': f'{choice.title()} price: {round(df.loc[idx]["Price"].array[0], 2)}',
         'font': {'size': 10, 'color': color}}
-
-    print(annot)
 
     return annot
 
