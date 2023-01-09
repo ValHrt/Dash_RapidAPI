@@ -76,10 +76,12 @@ def annotate_plot(df, choice):
     if choice == "min":
         idx = df[["Price"]].idxmin()
         color = "red"
+        pos_adjust = 0.99
 
     elif choice == "max":
         idx = df[["Price"]].idxmax()
         color = "green"
+        pos_adjust = 1.01
 
     else:
         raise ValueError("Only min and max can be passed to the function as "
@@ -87,9 +89,8 @@ def annotate_plot(df, choice):
 
     annot = {
         'x': df.loc[idx]["Date"].array[0],
-        'y': df.loc[idx]["Price"].array[0],
-        'showarrow': True, 'arrowhead': 3,
-        'arrowside': 'end',
+        'y': df.loc[idx]["Price"].array[0] * pos_adjust,
+        'showarrow': False,
         'text': f'{choice.title()} price: {round(df.loc[idx]["Price"].array[0], 2)}',
         'font': {'size': 10, 'color': color}}
 
