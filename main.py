@@ -86,9 +86,10 @@ def annotate_plot(df, choice):
         "choice argument!")
 
     annot = {
-        'x': df.loc[idx]["Date"].values[0],
-        'y': df.loc[idx]["Price"].values[0],
+        'x': df.loc[idx]["Date"].array[0],
+        'y': df.loc[idx]["Price"].array[0],
         'showarrow': True, 'arrowhead': 3,
+        'arrowside': 'end',
         'text': f'{choice.title()} price: {round(df.loc[idx]["Price"].array[0], 2)}',
         'font': {'size': 10, 'color': color}}
 
@@ -190,6 +191,7 @@ def update_figure(currency, coin, relayout_data):
         (df_market_new['Date'] <= relayout_data["xaxis.range[1]"])
 
         df_market_new["Date"] = df_market_new["Date"].dt.date
+        df_market_new["Date"] = df_market_new["Date"].apply(correct_date)
 
         price_fig.update_yaxes(autorange = False)
         price_fig.update_layout(
@@ -203,7 +205,7 @@ def update_figure(currency, coin, relayout_data):
              df_market_new.loc[mask]["Price"].max()*1.02]},
              'annotations': [annotate_plot(df_market_new.loc[mask], 'min'),
                              annotate_plot(df_market_new.loc[mask], 'max')]})
-        print(annotate_plot(df_market_new.loc[mask], 'max'))
+
     return price_fig
 
 
@@ -215,8 +217,8 @@ def usd_eur_symbol(currency: str):
     return currency.upper()
 
 
-def convert_timestamp(time):
-    return dt.datetime.utcfromtimestamp(time.tolist()/1e9).date()
+def correct_date(time):
+    return (time + dt.timedelta(hours = 24))
 
 if __name__ == '__main__':
     app.run_server(debug=True)
